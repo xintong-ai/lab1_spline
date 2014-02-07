@@ -74,6 +74,24 @@ void GLWidget::paintEvent(QPaintEvent *event)
 
 void GLWidget::mousePressEvent(QMouseEvent * event)
 {
-    helper->AddCtrlPt(event->pos());
+    p_press = event->pos();
+
+}
+
+
+void GLWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+
+    if(event->button() == Qt::RightButton)
+        helper->FindAndDuplicate(p_press);
+    else if(event->button() == Qt::LeftButton)
+    {
+        if(farenough(p_press, event->pos()))
+            helper->FindAndSetPoint(p_press, event->pos());
+        else
+            helper->AddCtrlPt(p_press);
+    }
+
     repaint();
 }
+

@@ -65,6 +65,8 @@ private:
     QRadioButton *radio0;
     QRadioButton *radio1;
     QRadioButton *radio2;
+    QRadioButton *radio3;
+    QRadioButton *radio4;
     GLWidget *openGL;
 
 private slots:

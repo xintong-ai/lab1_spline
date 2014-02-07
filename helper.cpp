@@ -91,6 +91,49 @@ inline QVector<QPoint> Bezier(QVector<QPoint> cp, int numSample)
     return ret;
 }
 
+inline QVector<QPoint> RationalBezier(QVector<QPoint> cp, int numSample)
+{
+    QVector<QPoint> ret;
+    int n = cp.size() - 1;
+    int n_mid = n * 0.5;
+    float w = 0;
+    for(int iu = 0; iu < numSample; iu++)    {
+        float u = 1.0 * iu / (float)(numSample - 1);
+        QPointF p(0, 0);
+        float denom = 0;
+        for(int i = 0; i < (n + 1); i++) {
+            w = (i == n_mid)? 5:1;
+            p += (Bernstein(u, i, n) * (QPointF)cp.at(i)) * w;
+            denom += Bernstein(u, i, n) * w;
+        }
+        p /= denom;
+        ret.push_back(p.toPoint());
+    }
+    return ret;
+}
+
+inline QVector<QPoint> ClosedBezier(QVector<QPoint> cp, int numSample)
+{
+    QVector<QPoint> ret;
+    QPointF dir = (cp[1] - cp.back()) * 0.2;
+    QPointF newEnd = cp.front() - dir;
+    QPointF newFront = cp.front() + dir;
+    cp.insert(1, newFront.toPoint());
+    cp.push_back(newEnd.toPoint());
+    cp.push_back(cp.front());
+    int n = cp.size() - 1;
+    for(int iu = 0; iu < numSample; iu++)    {
+        float u = 1.0 * iu / (float)(numSample - 1);
+        QPointF p(0, 0);
+        for(int i = 0; i < (n + 1); i++) {
+            p += (Bernstein(u, i, n) * (QPointF)cp.at(i));
+        }
+        ret.push_back(p.toPoint());
+    }
+    return ret;
+}
+
+
 inline QVector<QPointF> BezierOneSubdivide(QVector<QPointF> cp, QVector<QPointF> poly1, QVector<QPointF> poly2, float u)
 {
     if(cp.size() == 1)  {
@@ -249,6 +292,7 @@ void Helper::paint(QPainter *painter, QPaintEvent *event, int elapsed)
 //    painter->drawPolyline(ctrlPts);
 //    painter->drawPolyline(BSpline(ctrlPts, 1, ctrlPts.size() * 32));
 //
+    QVector<QPointF> ctrlPtsF;
     switch(_splineType)
     {
     case 0:
@@ -258,10 +302,15 @@ void Helper::paint(QPainter *painter, QPaintEvent *event, int elapsed)
         painter->drawPolyline(CubicBSpline(ctrlPts, 16));
         break;
     case 2:
-        QVector<QPointF> ctrlPtsF;
         for(int i = 0; i < ctrlPts.size(); i++)
             ctrlPtsF.push_back(ctrlPts[i]);
         painter->drawPolyline(BezierSubdivide(ctrlPtsF, 16, 0.5));
+        break;
+    case 3:
+        painter->drawPolyline(ClosedBezier(ctrlPts, ctrlPts.size() * 32));
+        break;
+    case 4:
+        painter->drawPolyline(RationalBezier(ctrlPts, ctrlPts.size() * 32));
         break;
     }
 
@@ -297,4 +346,24 @@ void Helper::SetSplineType(int i)
 {
     _splineType = i;
 
+}
+
+void Helper::FindAndSetPoint(QPoint p_find, QPoint p_set)
+{
+    for(int i = 0; i < ctrlPts.size(); i++) {
+        if(!farenough(p_find, ctrlPts[i]))   {
+            ctrlPts[i] = p_set;
+            break;
+        }
+    }
+}
+
+void Helper::FindAndDuplicate(QPoint p)
+{
+    for(int i = 0; i < ctrlPts.size(); i++) {
+        if(!farenough(p, ctrlPts[i]))   {
+            ctrlPts.insert(i + 1, ctrlPts[i]);
+            break;
+        }
+    }
 }

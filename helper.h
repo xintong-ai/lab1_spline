@@ -75,6 +75,8 @@ public:
     void paint(QPainter *painter, QPaintEvent *event, int elapsed);
     void AddCtrlPt(QPoint pt);
     void SetSplineType(int i);
+    void FindAndSetPoint(QPoint p_find, QPoint p_set);
+    void FindAndDuplicate(QPoint p);
 
 private:
     QBrush background;
@@ -87,6 +89,15 @@ private:
     QVector<QPoint> ctrlPts;
 
 };
+
+
+
+inline bool farenough(QPoint p0, QPoint p1)
+{
+    QPoint d = p0 - p1;
+    return (d.x()*d.x() + d.y()*d.y() > 16)?true:false;
+
+}
 //! [0]
 
 #endif

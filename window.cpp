@@ -55,14 +55,18 @@ Window::Window()
 
     // radio buttons
     QGroupBox *groupBox = new QGroupBox(tr("Spline Types:"));
-    radio0 = new QRadioButton(tr("&Radio button 1"));
-    radio1 = new QRadioButton(tr("R&adio button 2"));
-    radio2 = new QRadioButton(tr("Ra&dio button 3"));
+    radio0 = new QRadioButton(tr("Bezier curve"));
+    radio1 = new QRadioButton(tr("Cubic B-spline"));
+    radio2 = new QRadioButton(tr("Subdivision curves"));
+    radio3 = new QRadioButton(tr("Closed Bezier curve"));
+    radio4 = new QRadioButton(tr("Rational Bezier curve"));
     radio0->setChecked(true);
     QVBoxLayout *vbox = new QVBoxLayout;
     vbox->addWidget(radio0);
     vbox->addWidget(radio1);
     vbox->addWidget(radio2);
+    vbox->addWidget(radio3);
+    vbox->addWidget(radio4);
     vbox->addStretch(1);
     groupBox->setLayout(vbox);
 
@@ -79,6 +83,8 @@ Window::Window()
     connect(radio0, SIGNAL(clicked()), this, SLOT(SplineTypeSelected()));
     connect(radio1, SIGNAL(clicked()), this, SLOT(SplineTypeSelected()));
     connect(radio2, SIGNAL(clicked()), this, SLOT(SplineTypeSelected()));
+    connect(radio3, SIGNAL(clicked()), this, SLOT(SplineTypeSelected()));
+    connect(radio4, SIGNAL(clicked()), this, SLOT(SplineTypeSelected()));
  //   connect(timer, SIGNAL(timeout()), openGL, SLOT(animate()));
     timer->start(50);
 
@@ -94,6 +100,10 @@ void Window::SplineTypeSelected()
         type = 1;
     else if(radio2->isChecked())
         type = 2;
+    else if(radio3->isChecked())
+        type = 3;
+    else if(radio4->isChecked())
+        type = 4;
     helper.SetSplineType(type);
     openGL->repaint();
 }

@@ -42,7 +42,7 @@
 #define GLWIDGET_H
 
 #include <QGLWidget>
-
+//#include <QPoint>
 //! [0]
 class Helper;
 QT_BEGIN_NAMESPACE
@@ -64,10 +64,12 @@ public slots:
 protected:
     void paintEvent(QPaintEvent *event);
     void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
 
 private:
     Helper *helper;
     int elapsed;
+    QPoint p_press;
 };
 //! [0]
 
